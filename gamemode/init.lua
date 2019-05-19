@@ -5,8 +5,8 @@ local folders = {
 for k, folder in pairs(folders) do
 	local files, subfolders = file.Find(folder .. "*", "LUA")
 	for k, filename in pairs(files) do
-		if filename:sub(1, 3) == "cl_" || filename:sub(1, 3) == "sh_" || filename == "shared.lua"
-			|| folder:match("/sh_") || folder:match("/cl_") then
+		if filename:sub(1, 3) == "cl_" or filename:sub(1, 3) == "sh_" or filename == "shared.lua"
+			 or folder:match("/sh_") or folder:match("/cl_") then
 			AddCSLuaFile(folder .. filename)
 		end
 	end
@@ -55,7 +55,7 @@ GM.ShowAdminsOnScoreboard = CreateConVar("mu_scoreboard_show_admins", 1, bit.bor
 GM.AdminPanelAllowed = CreateConVar("mu_allow_admin_panel", 1, bit.bor(FCVAR_NOTIFY), "Should allow admins to use mu_admin_panel" )
 GM.ShowSpectateInfo = CreateConVar("mu_show_spectate_info", 1, bit.bor(FCVAR_NOTIFY), "Should show players name and color to spectators" )
 
-function GM:Initialize() 
+function GM:Initialize()
 	self:LoadSpawns()
 	self.DeathRagdolls = {}
 	self:StartNewRound()
@@ -64,7 +64,7 @@ function GM:Initialize()
 	self:LoadBystanderNames()
 end
 
-function GM:InitPostEntity() 
+function GM:InitPostEntity()
 	local canAdd = self:CountLootItems() <= 0
 	for k, ent in pairs(ents.FindByClass("mu_loot")) do
 		if canAdd then
@@ -74,9 +74,9 @@ function GM:InitPostEntity()
 	self:InitPostEntityAndMapCleanup()
 end
 
-function GM:InitPostEntityAndMapCleanup() 
+function GM:InitPostEntityAndMapCleanup()
 	for k, ent in pairs(ents.GetAll()) do
-		if ent:IsWeapon() || ent:GetClass():match("^weapon_") then
+		if ent:IsWeapon() or ent:GetClass():match("^weapon_") then
 			ent:Remove()
 		end
 
@@ -98,17 +98,17 @@ function GM:Think()
 	self:FlashlightThink()
 
 	for k, ply in pairs(player.GetAll()) do
-		if ply:IsCSpectating() && IsValid(ply:GetCSpectatee()) && (!ply.LastSpectatePosSet || ply.LastSpectatePosSet < CurTime()) then
+		if ply:IsCSpectating() and IsValid(ply:GetCSpectatee()) and (not ply.LastSpectatePosSet or ply.LastSpectatePosSet < CurTime()) then
 			ply.LastSpectatePosSet = CurTime() + 0.25
 			ply:SetPos(ply:GetCSpectatee():GetPos())
 		end
-		if !ply.HasMoved then
-			if ply:IsBot() || ply:KeyDown(IN_FORWARD) || ply:KeyDown(IN_JUMP) || ply:KeyDown(IN_ATTACK) || ply:KeyDown(IN_ATTACK2)
-				|| ply:KeyDown(IN_MOVELEFT) || ply:KeyDown(IN_MOVERIGHT) || ply:KeyDown(IN_BACK) || ply:KeyDown(IN_DUCK) then
+		if not ply.HasMoved then
+			if ply:IsBot() or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_JUMP) or ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)
+				 or ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_BACK) or ply:KeyDown(IN_DUCK) then
 				ply.HasMoved = true
 			end
 		end
-		if ply.LastTKTime && ply.LastTKTime + self:GetTKPenaltyTime() < CurTime() then
+		if ply.LastTKTime and ply.LastTKTime + self:GetTKPenaltyTime() < CurTime() then
 			ply:SetTKer(false)
 		end
 	end
@@ -119,7 +119,7 @@ function GM:AllowPlayerPickup( ply, ent )
 end
 
 function GM:PlayerNoClip( ply )
-	return ply:IsListenServerHost() || ply:GetMoveType() == MOVETYPE_NOCLIP
+	return ply:IsListenServerHost() or ply:GetMoveType() == MOVETYPE_NOCLIP
 end
 
 function GM:OnEndRound()
@@ -128,7 +128,7 @@ end
 function GM:OnStartRound()
 end
 
-function GM:SendMessageAll(msg) 
+function GM:SendMessageAll(msg)
 	for k,v in pairs(player.GetAll()) do
 		v:ChatPrint(msg)
 	end
@@ -136,11 +136,11 @@ end
 
 function GM:EntityTakeDamage( ent, dmginfo )
 	// disable all prop damage
-	if IsValid(dmginfo:GetAttacker()) && (dmginfo:GetAttacker():GetClass() == "prop_physics" || dmginfo:GetAttacker():GetClass() == "prop_physics_multiplayer" || dmginfo:GetAttacker():GetClass() == "prop_physics_respawnable" || dmginfo:GetAttacker():GetClass() == "func_physbox") then
+	if IsValid(dmginfo:GetAttacker()) and (dmginfo:GetAttacker():GetClass() == "prop_physics" or dmginfo:GetAttacker():GetClass() == "prop_physics_multiplayer" or dmginfo:GetAttacker():GetClass() == "prop_physics_respawnable" or dmginfo:GetAttacker():GetClass() == "func_physbox") then
 		return true
 	end
 
-	if IsValid(dmginfo:GetInflictor()) && (dmginfo:GetInflictor():GetClass() == "prop_physics" || dmginfo:GetInflictor():GetClass() == "prop_physics_multiplayer" || dmginfo:GetInflictor():GetClass() == "prop_physics_respawnable" || dmginfo:GetInflictor():GetClass() == "func_physbox") then
+	if IsValid(dmginfo:GetInflictor()) and (dmginfo:GetInflictor():GetClass() == "prop_physics" or dmginfo:GetInflictor():GetClass() == "prop_physics_multiplayer" or dmginfo:GetInflictor():GetClass() == "prop_physics_respawnable" or dmginfo:GetInflictor():GetClass() == "func_physbox") then
 		return true
 	end
 

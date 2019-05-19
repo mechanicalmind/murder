@@ -1,26 +1,26 @@
 if SERVER then
 	AddCSLuaFile()
-	
-		
+
+
 	util.AddNetworkString("mu_knife_charge")
 
 	SWEP.KnifeChargeConvar = CreateConVar("mu_knife_charge", 1, bit.bor(FCVAR_NOTIFY), "Should we use a charge bar on alt attack?" )
 else
 	killicon.AddFont("weapon_mu_knife", "HL2MPTypeDeath", "5", Color(0, 0, 255, 255))
-	
+
 	function SWEP:DrawWeaponSelection( x, y, w, h, alpha )
 		local name = translate and translate.knife or "Knife"
 		surface.SetFont("MersText1")
 		local tw, th = surface.GetTextSize(name:sub(2))
-		
+
 		surface.SetFont("MersHead1")
 		local twf, thf = surface.GetTextSize(name:sub(1, 1))
 		tw = tw + twf + 1
-		
+
 		draw.DrawText(name:sub(2), "MersText1", x + w * 0.5 - tw / 2 + twf + 1, y + h * 0.51, Color(255, 150, 0, alpha), 0)
 		draw.DrawText(name:sub(1, 1), "MersHead1", x + w * 0.5 - tw / 2 , y + h * 0.49, Color(255, 50, 50, alpha), 0)
 	end
-	
+
 	function SWEP:DrawHUD()
 		if self.ChargeStart then
 			local sw, sh = ScrW(), ScrH()
@@ -35,13 +35,13 @@ else
 			surface.SetDrawColor(255, 0, 0, 150)
 			surface.DrawRect(sw / 2 - w / 2, sh / 2 - h / 2 + 120, w * charge, h)
 		end
-	end  
+	end
 
 	net.Receive("mu_knife_charge", function(len)
 		local ent = net.ReadEntity()
 		if not IsValid(ent) then return end
-		
-		local charging = net.ReadUInt(8) != 0
+
+		local charging = net.ReadUInt(8) ~= 0
 		if charging then
 			ent.ChargeStart = net.ReadDouble()
 		else
@@ -70,7 +70,7 @@ SWEP.Primary.Sequence = {"midslash1", "midslash2"}
 SWEP.Primary.Delay = 0.5
 SWEP.Primary.Recoil = 3
 SWEP.Primary.Damage = 120
-SWEP.Primary.NumShots = 1	
+SWEP.Primary.NumShots = 1
 SWEP.Primary.Cone = 0.04
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.Force = 900
@@ -97,7 +97,7 @@ function SWEP:Holster()
 			net.WriteUInt(0, 8)
 			net.Send(self.Owner)
 		end
-		
+
 		self.ChargeStart = nil
 	end
 	return self.BaseClass.Holster(self)
@@ -114,15 +114,15 @@ end
 
 function SWEP:Think()
 	self.BaseClass.Think(self)
-	if self:GetFistHit() != 0 && self:GetFistHit() < RealTime() then
+	if self:GetFistHit() ~= 0 and self:GetFistHit() < RealTime() then
 		self:SetFistHit(0)
 		if IsFirstTimePredicted() then
 			self:AttackTrace()
 		end
 	end
-	
-	if SERVER && self.ChargeStart then
-		if !IsValid(self.Owner) || !self.Owner:KeyDown(IN_ATTACK2) then
+
+	if SERVER and self.ChargeStart then
+		if not IsValid(self.Owner) or not self.Owner:KeyDown(IN_ATTACK2) then
 			if IsValid(self.Owner) then
 				self:ThrowKnife(self:GetCharge())
 				net.Start("mu_knife_charge")
@@ -170,15 +170,15 @@ function SWEP:AttackTrace()
 	tr.TraceAimVector = self.Owner:GetAimVector()
 
 	// aim around
-	if !IsValid(tr.Entity) then tr = self:GetTrace() end
-	if !IsValid(tr.Entity) then tr = self:GetTrace(10,0) end
-	if !IsValid(tr.Entity) then tr = self:GetTrace(-10,0) end
-	if !IsValid(tr.Entity) then tr = self:GetTrace(0,10) end
-	if !IsValid(tr.Entity) then tr = self:GetTrace(0,-10) end
-	
+	if not IsValid(tr.Entity) then tr = self:GetTrace() end
+	if not IsValid(tr.Entity) then tr = self:GetTrace(10,0) end
+	if not IsValid(tr.Entity) then tr = self:GetTrace(-10,0) end
+	if not IsValid(tr.Entity) then tr = self:GetTrace(0,10) end
+	if not IsValid(tr.Entity) then tr = self:GetTrace(0,-10) end
+
 	if tr.Hit then
 		if IsValid(tr.Entity) then
-			if CLIENT && LocalPlayer() == self.Owner then
+			if CLIENT and LocalPlayer() == self.Owner then
 				self:EmitSound("Weapon_Crowbar.Melee_Hit")
 			end
 			local dmg = DamageInfo()
@@ -190,7 +190,7 @@ function SWEP:AttackTrace()
 			dmg:SetDamageType(DMG_SLASH)
 			tr.Entity:DispatchTraceAttack(dmg, tr)
 
-			if tr.Entity != self && tr.Entity != self.Owner && (tr.Entity:IsPlayer() || tr.Entity:GetClass() == "prop_ragdoll") then
+			if tr.Entity ~= self and tr.Entity ~= self.Owner and (tr.Entity:IsPlayer() or tr.Entity:GetClass() == "prop_ragdoll") then
 				local edata = EffectData()
 				edata:SetStart(self.Owner:GetShootPos())
 				edata:SetOrigin(tr.HitPos)
@@ -203,7 +203,7 @@ function SWEP:AttackTrace()
 		end
 	else
 		// only play the sound for the murderer
-		if CLIENT && LocalPlayer() == self.Owner then
+		if CLIENT and LocalPlayer() == self.Owner then
 			self:EmitSound("Weapon_Crowbar.Single")
 		end
 	end
@@ -235,7 +235,7 @@ function SWEP:ThrowKnife(force)
 end
 
 function SWEP:SecondaryAttack()
-	if !self:IsIdle() then return end
+	if not self:IsIdle() then return end
 
 	if SERVER then
 		if self.KnifeChargeConvar:GetBool() then

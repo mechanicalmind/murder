@@ -17,7 +17,7 @@ function PANEL:Init()
 	self.ColorBlock:Dock(LEFT)
 	self.ColorBlock:SetSize(32,32)
 	function self.ColorBlock:Paint(w, h)
-		if IsValid(self.Player) && self.Player:IsPlayer() then
+		if IsValid(self.Player) and self.Player:IsPlayer() then
 			local col = self.Player:GetPlayerColor()
 			surface.SetDrawColor(Color(col.x * 255, col.y * 255, col.z * 255))
 			surface.DrawRect(0, 0, w, h)
@@ -37,11 +37,11 @@ function PANEL:Setup( ply )
 
 	self.ply = ply
 
-	self:CheckBystanderState()	
+	self:CheckBystanderState()
 
 	self.Avatar:SetPlayer( ply )
 	self.ColorBlock.Player = ply
-	
+
 	self:InvalidateLayout()
 
 end
@@ -50,24 +50,24 @@ function PANEL:CheckBystanderState(state)
 	if IsValid(self.ply) then
 		local newBystanderState = false
 		local client = LocalPlayer()
-		if !IsValid(client) then
+		if not IsValid(client) then
 			newBystanderState = true
 		else
-			if client:Team() == 2 && client:Alive() then
+			if client:Team() == 2 and client:Alive() then
 				newBystanderState = true
 			else
-				if self.ply:Team() == 2 && self.ply:Alive() then
+				if self.ply:Team() == 2 and self.ply:Alive() then
 					newBystanderState = true
 				end
 			end
 		end
 
-		if self.Bystander != newBystanderState then
+		if self.Bystander ~= newBystanderState then
 			self:SetBystanderState(newBystanderState)
 		end
 		if newBystanderState then
 			local col = self.ply:GetPlayerColor()
-			if col != self.PrevColor then
+			if col ~= self.PrevColor then
 				local color = Color(col.x * 255, col.y * 255, col.z * 255)
 				self.Color = color
 				self.LabelName:SetTextColor(color)
@@ -88,7 +88,7 @@ function PANEL:SetBystanderState(state)
 		self.LabelName:SetTextColor(color)
 		self.ColorBlock:SetVisible(true)
 		self.Avatar:SetVisible(false)
-	else	
+	else
 		self.LabelName:SetTextColor(color_white)
 		self.LabelName:SetText( self.ply:Nick() )
 		self.ColorBlock:SetVisible(false)
@@ -98,7 +98,7 @@ end
 
 function PANEL:Paint( w, h )
 
-	if ( !IsValid( self.ply ) ) then return end
+	if ( not IsValid( self.ply ) ) then return end
 	draw.RoundedBox( 4, 0, 0, w, h, Color( 0, self.ply:VoiceVolume() * 255, 0, 240 ) )
 
 end
@@ -113,17 +113,17 @@ function PANEL:Think( )
 end
 
 function PANEL:FadeOut( anim, delta, data )
-	
+
 	if ( anim.Finished ) then
-	
+
 		if ( IsValid( PlayerVoicePanels[ self.ply ] ) ) then
 			PlayerVoicePanels[ self.ply ]:Remove()
 			PlayerVoicePanels[ self.ply ] = nil
 			return
 		end
-		
+
 	return end
-			
+
 	self:SetAlpha( 255 - (255 * delta) )
 
 end
@@ -134,8 +134,8 @@ derma.DefineControl( "VoiceNotifyMurder", "", PANEL, "DPanel" )
 
 function GM:PlayerStartVoice( ply )
 
-	if ( !IsValid( g_VoicePanelList ) ) then return end
-	
+	if ( not IsValid( g_VoicePanelList ) ) then return end
+
 	-- There'd be an exta one if voice_loopback is on, so remove it.
 	GAMEMODE:PlayerEndVoice( ply )
 
@@ -153,24 +153,24 @@ function GM:PlayerStartVoice( ply )
 
 	end
 
-	if ( !IsValid( ply ) ) then return end
+	if ( not IsValid( ply ) ) then return end
 
 	local pnl = g_VoicePanelList:Add( "VoiceNotifyMurder" )
 	pnl:Setup( ply )
-	
+
 	PlayerVoicePanels[ ply ] = pnl
-	
+
 end
 
 
 local function VoiceClean()
 
 	for k, v in pairs( PlayerVoicePanels ) do
-	
-		if ( !IsValid( k ) ) then
+
+		if ( not IsValid( k ) ) then
 			GAMEMODE:PlayerEndVoice( k )
 		end
-	
+
 	end
 
 end
@@ -179,7 +179,7 @@ timer.Create( "VoiceClean", 10, 0, VoiceClean )
 
 
 function GM:PlayerEndVoice( ply )
-	
+
 	if ( IsValid( PlayerVoicePanels[ ply ] ) ) then
 
 		if ( PlayerVoicePanels[ ply ].fadeAnim ) then return end
@@ -188,7 +188,7 @@ function GM:PlayerEndVoice( ply )
 		PlayerVoicePanels[ ply ].fadeAnim:Start( 2 )
 
 	end
-	
+
 end
 
 

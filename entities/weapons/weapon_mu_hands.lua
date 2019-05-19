@@ -36,7 +36,7 @@ local function addangle(ang,ang2)
 end
 
 function SWEP:CalcViewModelView(vm, opos, oang, pos, ang)
-	
+
 	// iron sights
 	local pos2 = Vector(-35, 0, 0)
 	addangle(ang, Angle(-90, 0, 0))
@@ -53,8 +53,8 @@ local pickupWhiteList = {
 
 if SERVER then
 	function SWEP:CanPickup(ent)
-		if ent:IsWeapon() || ent:IsPlayer() || ent:IsNPC() then return false end
-		
+		if ent:IsWeapon() or ent:IsPlayer() or ent:IsNPC() then return false end
+
 		local class = ent:GetClass()
 		if pickupWhiteList[class] then return true end
 
@@ -67,7 +67,7 @@ function SWEP:SecondaryAttack()
 		self:SetCarrying()
 		local tr = self.Owner:GetEyeTraceNoCursor()
 
-		if IsValid(tr.Entity) && self:CanPickup(tr.Entity) then
+		if IsValid(tr.Entity) and self:CanPickup(tr.Entity) then
 			self:SetCarrying(tr.Entity, tr.PhysicsBone)
 			self:ApplyForce()
 		end
@@ -77,7 +77,7 @@ end
 function SWEP:ApplyForce()
 	local target = self.Owner:GetAimVector() * 30 + self.Owner:GetShootPos()
 	local phys = self.CarryEnt:GetPhysicsObjectNum(self.CarryBone)
-	
+
 	if IsValid(phys) then
 		local vec = target - phys:GetPos()
 		local len = vec:Length()
@@ -87,12 +87,12 @@ function SWEP:ApplyForce()
 		end
 
 		vec:Normalize()
-		
+
 		local tvec = vec * len * 15
 		local avec = tvec - phys:GetVelocity()
 		avec = avec:GetNormal() * math.min(45, avec:Length())
 		avec = avec / phys:GetMass() * 16
-		
+
 		phys:AddVelocity(avec)
 	end
 end
@@ -109,13 +109,13 @@ function SWEP:SetCarrying(ent, bone)
 		self.CarryEnt = nil
 		self.CarryBone = nil
 	end
-	
+
 	self.Owner:CalculateSpeed()
 end
 
 function SWEP:Think()
 	self.BaseClass.Think(self)
-	if IsValid(self.Owner) && self.Owner:KeyDown(IN_ATTACK2) then
+	if IsValid(self.Owner) and self.Owner:KeyDown(IN_ATTACK2) then
 		if IsValid(self.CarryEnt) then
 			self:ApplyForce()
 		end

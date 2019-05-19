@@ -8,9 +8,9 @@
 --		}
 --	}
 
-matproxy.Add( 
+matproxy.Add(
 {
-	name	=	"PlayerColor", 
+	name	=	"PlayerColor",
 
 	init	=	function( self, mat, values )
 
@@ -21,12 +21,12 @@ matproxy.Add(
 
 	bind	=	function( self, mat, ent )
 
-		if ( !IsValid( ent ) ) then return end
+		if ( not IsValid( ent ) ) then return end
 
 		// retarded garry shit
 		-- if ( ent:IsRagdoll() ) then
 		-- 	ent = ent:GetRagdollOwner()
-		-- 	if ( !IsValid( ent ) ) then return end
+		-- 	if ( not IsValid( ent ) ) then return end
 		-- end
 
 		if ( ent.GetPlayerColor ) then
@@ -38,5 +38,5 @@ matproxy.Add(
 			mat:SetVector( self.ResultTo, Vector( 62.0/255.0, 88.0/255.0, 106.0/255.0 ) )
 		end
 
-	end 
+	end
 })
